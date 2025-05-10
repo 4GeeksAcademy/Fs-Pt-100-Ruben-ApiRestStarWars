@@ -56,7 +56,7 @@ def get_user(id):
 
 @app.route('/users', methods=['POST'])
 def create_user():
-    data = request.get_json
+    data = request.get_json()
     if not data or "email" not in data or "password" not in data or "username" not in data:
         return jsonify({"error": "Missing Data"}), 404
     
@@ -72,16 +72,16 @@ def create_user():
 
 @app.route('/users/<int:id>', methods=['PUT'])
 def update_user(id):
-    data = request.get_json
+    data = request.get_json()
     stmt = select(Users).where(Users.id == id)
     user = db.session.execute(stmt).scalar_one_or_none()
 
     if user is None:
         return jsonify({"error": "User not found"}), 404
     
-    user.email = data.get("email", data.email)
-    user.password = data.get("password", data.password)
-    user.username = data.get("username", data.username)
+    user.email = data.get("email", user.email)
+    user.password = data.get("password", user.password)
+    user.username = data.get("username", user.username)
     db.session.commit()
 
     return jsonify(user.serialize()), 200
@@ -120,7 +120,7 @@ def get_vehicle(id):
 
 @app.route('/vehicles', methods=['POST'])
 def create_vehicle():
-    data = request.get_json
+    data = request.get_json()
     if not data or "name" not in data:
         return jsonify({"error": "Missing Data"}), 404
     
@@ -134,14 +134,14 @@ def create_vehicle():
 
 @app.route('/vehicles/<int:id>', methods=['PUT'])
 def update_vehicle(id):
-    data = request.get_json
+    data = request.get_json()
     stmt = select(Vehicles).where(Vehicles.id == id)
     vehicle = db.session.execute(stmt).scalar_one_or_none()
 
     if vehicle is None:
         return jsonify({"error": "Vehicle not found"}), 404
     
-    vehicle.name = data.get("name", data.name)
+    vehicle.name = data.get("name", vehicle.name)
     db.session.commit()
 
     return jsonify(vehicle.serialize()), 200
@@ -180,7 +180,7 @@ def get_planet(id):
 
 @app.route('/planets', methods=['POST'])
 def create_planet():
-    data = request.get_json
+    data = request.get_json()
     if not data or "name" not in data:
         return jsonify({"error": "Missing Data"}), 404
     
@@ -194,14 +194,14 @@ def create_planet():
 
 @app.route('/planets/<int:id>', methods=['PUT'])
 def update_planet(id):
-    data = request.get_json
+    data = request.get_json()
     stmt = select(Planets).where(Planets.id == id)
     planet = db.session.execute(stmt).scalar_one_or_none()
 
     if planet is None:
         return jsonify({"error": "Planet not found"}), 404
     
-    planet.name = data.get("name", data.name)
+    planet.name = data.get("name", planet.name)
     db.session.commit()
 
     return jsonify(planet.serialize()), 200
@@ -240,7 +240,7 @@ def get_character(id):
 
 @app.route('/characters', methods=['POST'])
 def create_character():
-    data = request.get_json
+    data = request.get_json()
     if not data or "name" not in data:
         return jsonify({"error": "Missing Data"}), 404
     
@@ -254,14 +254,14 @@ def create_character():
 
 @app.route('/characters/<int:id>', methods=['PUT'])
 def update_character(id):
-    data = request.get_json
+    data = request.get_json()
     stmt = select(Characters).where(Characters.id == id)
     character = db.session.execute(stmt).scalar_one_or_none()
 
     if character is None:
         return jsonify({"error": "Character not found"}), 404
     
-    character.name = data.get("name", data.name)
+    character.name = data.get("name", character.name)
     db.session.commit()
 
     return jsonify(character.serialize()), 200
@@ -280,6 +280,180 @@ def delete_character(id):
     db.session.commit()
 
     return jsonify({"message": "Character delete"}), 200
+
+
+@app.route('/users/favourites', methods=['GET'])
+def get_favourites():
+    stmt = select(Favourites)
+    favourites = db.session.execute(stmt).scalars().all()
+    if favourites is None:
+        return jsonify({"error": "Favourites not found"}), 404
+    return jsonify([fav.serialize() for fav in favourites]), 200
+
+
+@app.route('/favourites/vehicles/<int:vehiclesFav_id>', methods=['POST'])
+def new_vehicle_fav(vehiclesFav_id):
+    data = request.get_json()
+    # stmt = select(Vehicles).where(Vehicles.id == vehiclesFav_id)
+    # favourite = db.session.execute(stmt).scalar_one_or_none()
+    users_id = data.get('user_id')
+    
+    if not users_id:
+        return jsonify({"error": "User ID is required"}), 400
+    
+    vehicle = db.session.get(Vehicles, vehiclesFav_id)
+    if not vehicle:
+        return jsonify({"error": "Vehicle not found"}), 404
+    
+    
+    user = db.session.get(Users, users_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 400
+
+    new_fav = Favourites(
+        usersFav_id=users_id,
+        vehiclesFav_id=vehiclesFav_id,
+        # planetsFav_id=None,
+        # charactersFav_id=None,
+    )
+
+    db.session.add(new_fav)
+    db.session.commit()
+    return jsonify(new_fav.serialize()), 201
+
+
+@app.route('/favourites/planets/<int:planetsFav_id>', methods=['POST'])
+def new_planet_fav(planetsFav_id):
+    data = request.get_json()
+    # stmt = select(Vehicles).where(Vehicles.id == vehiclesFav_id)
+    # favourite = db.session.execute(stmt).scalar_one_or_none()
+    users_id = data.get('user_id')
+
+    if not users_id:
+        return jsonify({"error": "User ID is required"}), 400
+    
+
+    planet = db.session.get(Planets, planetsFav_id)
+    if not planet:
+        return jsonify({"error": "Planet not found"}), 404
+    
+    user = db.session.get(Users, users_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 400
+
+    new_fav = Favourites(
+        usersFav_id=users_id,
+        # vehiclesFav_id=None,
+        planetsFav_id=planetsFav_id,
+        # charactersFav_id=None
+    )
+
+    db.session.add(new_fav)
+    db.session.commit()
+    return jsonify(new_fav.serialize()), 201
+
+
+@app.route('/favourites/characters/<int:charactersFav_id>', methods=['POST'])
+def new_character_fav(charactersFav_id):
+    data = request.get_json()
+    # stmt = select(Vehicles).where(Vehicles.id == vehiclesFav_id)
+    # favourite = db.session.execute(stmt).scalar_one_or_none()
+    users_id = data.get('user_id')
+
+    if not users_id:
+        return jsonify({"error": "User not found"}), 400
+    
+
+    character = db.session.get(Characters, charactersFav_id)
+    if not character:
+        return jsonify({"error": "Character not found"}), 404
+    
+
+    user = db.session.get(Users, users_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 400
+    
+    
+
+    new_fav = Favourites(
+        usersFav_id=users_id,
+        # vehiclesFav_id=None,
+        # planetsFav_id=None,
+        charactersFav_id=charactersFav_id
+    )
+
+    db.session.add(new_fav)
+    db.session.commit()
+    return jsonify(new_fav.serialize()), 201
+
+@app.route('/favourites/vehicles/<int:vehiclesFav_id>', methods=['DELETE'])
+def delete_vehicle_fav(vehiclesFav_id):
+
+    data = request.get_json()
+    # stmt = select(Vehicles).where(Vehicles.id == vehiclesFav_id)
+    # favourite = db.session.execute(stmt).scalar_one_or_none()
+    users_id = data.get('user_id')
+
+    if not users_id:
+        return jsonify({"error": "User not found"}), 400
+    
+    stmt = select(Favourites).where(
+        Favourites.usersFav_id == users_id,
+        Favourites.vehiclesFav_id == vehiclesFav_id
+    )
+    vehicle = db.session.execute(stmt).scalar_one_or_none()
+    
+    db.session.delete(vehicle)
+    db.session.commit()
+
+    return jsonify({"message": "Vehicle delete"}), 200
+
+@app.route('/favourites/planets/<int:planetsFav_id>', methods=['DELETE'])
+def delete_planet_fav(planetsFav_id):
+
+    data = request.get_json()
+    # stmt = select(Vehicles).where(Vehicles.id == vehiclesFav_id)
+    # favourite = db.session.execute(stmt).scalar_one_or_none()
+    users_id = data.get('user_id')
+
+    if not users_id:
+        return jsonify({"error": "User not found"}), 400
+    
+    stmt = select(Favourites).where(
+        Favourites.usersFav_id == users_id,
+        Favourites.planetsFav_id == planetsFav_id
+    )
+    planet = db.session.execute(stmt).scalar_one_or_none()
+    
+    db.session.delete(planet)
+    db.session.commit()
+
+    return jsonify({"message": "Planet delete"}), 200
+
+
+@app.route('/favourites/characters/<int:charactersFav_id>', methods=['DELETE'])
+def delete_character_fav(charactersFav_id):
+
+    data = request.get_json()
+    # stmt = select(Vehicles).where(Vehicles.id == vehiclesFav_id)
+    # favourite = db.session.execute(stmt).scalar_one_or_none()
+    users_id = data.get('user_id')
+
+    if not users_id:
+        return jsonify({"error": "User not found"}), 400
+    
+    stmt = select(Favourites).where(
+        Favourites.usersFav_id == users_id,
+        Favourites.charactersFav_id == charactersFav_id
+    )
+    character = db.session.execute(stmt).scalar_one_or_none()
+    
+    db.session.delete(character)
+    db.session.commit()
+
+    return jsonify({"message": "Character delete"}), 200
+
+
 
 
 # this only runs if `$ python src/app.py` is executed
