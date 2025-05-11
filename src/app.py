@@ -401,7 +401,7 @@ def delete_vehicle_fav(vehiclesFav_id):
         Favourites.usersFav_id == users_id,
         Favourites.vehiclesFav_id == vehiclesFav_id
     )
-    vehicle = db.session.execute(stmt).scalar_one_or_none()
+    vehicle = db.session.execute(stmt).scalars().first()
     
     db.session.delete(vehicle)
     db.session.commit()
@@ -423,7 +423,7 @@ def delete_planet_fav(planetsFav_id):
         Favourites.usersFav_id == users_id,
         Favourites.planetsFav_id == planetsFav_id
     )
-    planet = db.session.execute(stmt).scalar_one_or_none()
+    planet = db.session.execute(stmt).scalars().first()
     
     db.session.delete(planet)
     db.session.commit()
@@ -446,7 +446,7 @@ def delete_character_fav(charactersFav_id):
         Favourites.usersFav_id == users_id,
         Favourites.charactersFav_id == charactersFav_id
     )
-    character = db.session.execute(stmt).scalar_one_or_none()
+    character = db.session.execute(stmt).scalars().first()
     
     db.session.delete(character)
     db.session.commit()
