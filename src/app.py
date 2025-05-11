@@ -406,7 +406,7 @@ def delete_vehicle_fav(vehiclesFav_id):
     db.session.delete(vehicle)
     db.session.commit()
 
-    return jsonify({"message": "Vehicle delete"}), 200
+    return jsonify({"message": "Vehicle Fav delete"}), 200
 
 @app.route('/favourites/planets/<int:planetsFav_id>', methods=['DELETE'])
 def delete_planet_fav(planetsFav_id):
@@ -428,7 +428,7 @@ def delete_planet_fav(planetsFav_id):
     db.session.delete(planet)
     db.session.commit()
 
-    return jsonify({"message": "Planet delete"}), 200
+    return jsonify({"message": "Planet Fav delete"}), 200
 
 
 @app.route('/favourites/characters/<int:charactersFav_id>', methods=['DELETE'])
@@ -451,7 +451,7 @@ def delete_character_fav(charactersFav_id):
     db.session.delete(character)
     db.session.commit()
 
-    return jsonify({"message": "Character delete"}), 200
+    return jsonify({"message": "Character Fav delete"}), 200
 
 
 
