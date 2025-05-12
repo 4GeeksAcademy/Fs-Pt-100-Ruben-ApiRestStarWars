@@ -29,7 +29,6 @@ class Users(db.Model):
             "id": self.id,
             "username": self.username,
             "email": self.email,
-            "password": self.password,
             "firstname": self.firstname if self.firstname else None,
             "lastname": self.lastname if self.lastname else None,
             "created_at": self.created_at.isoformat(),
