@@ -28,6 +28,7 @@ class Users(db.Model):
         return {
             "id": self.id,
             "username": self.username,
+            "password": self.password,
             "email": self.email,
             "firstname": self.firstname if self.firstname else None,
             "lastname": self.lastname if self.lastname else None,
@@ -38,8 +39,7 @@ class Users(db.Model):
             "favourite": [fav.serialize() for fav in self.favourite]
         }
     
-    def __str__(self):
-        return self.username
+
 
 class Vehicles(db.Model):
     __tablename__ = "vehicles"

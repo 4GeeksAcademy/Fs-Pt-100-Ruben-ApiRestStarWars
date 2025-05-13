@@ -60,11 +60,15 @@ def create_user():
     if not data or "email" not in data or "password" not in data or "username" not in data:
         return jsonify({"error": "Missing Data"}), 404
     
+
     new_user = Users(
         email = data["email"],
         password = data["password"],
-        username = data["username"]
+        username = data["username"],
+        firstname = data["firstname"] or None,
+        lastname = data["lastname"]
     )
+
     db.session.add(new_user)
     db.session.commit()
     return jsonify(new_user.serialize()), 201
@@ -126,6 +130,10 @@ def create_vehicle():
     
     new_vehicle = Vehicles(
         name = data["name"],
+        model = data["model"],
+        cost_credits = data["cost_credits"],
+        max_speed = data["max_speed"],
+        crew = data["crew"]
     )
     db.session.add(new_vehicle)
     db.session.commit()
@@ -186,6 +194,9 @@ def create_planet():
     
     new_planet = Planets(
         name = data["name"],
+        climate = data["climate"],
+        population = data["population"],
+        terrain = data["terrain"]
     )
     db.session.add(new_planet)
     db.session.commit()
@@ -246,6 +257,11 @@ def create_character():
     
     new_character = Characters(
         name = data["name"],
+        gender = data["gender"],
+        height = data["height"],
+        birth_year = data["birth_year"],
+        skin_color = data["skin_color"],
+        eyes_color = data["eyes_color"]
     )
     db.session.add(new_character)
     db.session.commit()
