@@ -65,8 +65,8 @@ def create_user():
         email = data["email"],
         password = data["password"],
         username = data["username"],
-        firstname = data["firstname"] or None,
-        lastname = data["lastname"]
+        firstname = data.get("firstname", None) ,
+        lastname = data.get("lastname", None)
     )
 
     db.session.add(new_user)
@@ -130,10 +130,10 @@ def create_vehicle():
     
     new_vehicle = Vehicles(
         name = data["name"],
-        model = data["model"],
-        cost_credits = data["cost_credits"],
-        max_speed = data["max_speed"],
-        crew = data["crew"]
+        model = data.get("model", None),
+        cost_credits = data.get("cost_credits", None),
+        max_speed = data.get("max_speed", None),
+        crew = data.get("crew", None)
     )
     db.session.add(new_vehicle)
     db.session.commit()
@@ -194,9 +194,9 @@ def create_planet():
     
     new_planet = Planets(
         name = data["name"],
-        climate = data["climate"],
-        population = data["population"],
-        terrain = data["terrain"]
+        climate = data.get("climate", None),
+        population = data.get("population", None),
+        terrain = data.get("terrain", None)
     )
     db.session.add(new_planet)
     db.session.commit()
@@ -257,11 +257,11 @@ def create_character():
     
     new_character = Characters(
         name = data["name"],
-        gender = data["gender"],
-        height = data["height"],
-        birth_year = data["birth_year"],
-        skin_color = data["skin_color"],
-        eyes_color = data["eyes_color"]
+        gender = data.get("gender", None),
+        height = data.get("height"),
+        birth_year = data.get("birth_year"),
+        skin_color = data.get("skin_color"),
+        eyes_color = data.get("eyes_color")
     )
     db.session.add(new_character)
     db.session.commit()
